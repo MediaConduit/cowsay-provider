@@ -7,7 +7,7 @@ export class CowsayDockerModel extends TextToTextModel {
   readonly capabilities: MediaCapability[] = [MediaCapability.TextToText];
 
   private dockerService: any;
-  private apiClient: CowsayAPIClient;
+  private apiClient!: CowsayAPIClient; // Definitely assigned in configureAPIClient()
 
   constructor(dockerService: any) {
     super({
@@ -22,10 +22,36 @@ export class CowsayDockerModel extends TextToTextModel {
     });
     this.dockerService = dockerService;
     
-    // Create API client for the cowsay service
+    // Configure API client with dynamic port from service
+    this.configureAPIClient();
+  }
+
+  private configureAPIClient(): void {
+    let baseUrl = 'http://localhost:80'; // fallback
+
+    // Try to get dynamic port from service info
+    if (this.dockerService && this.dockerService.getServiceInfo) {
+      try {
+        const serviceInfo = this.dockerService.getServiceInfo();
+        if (serviceInfo.ports && serviceInfo.ports.length > 0) {
+          const port = serviceInfo.ports[0];
+          baseUrl = `http://localhost:${port}`;
+          console.log(`🔗 CowsayDockerModel using dynamic port: ${port}`);
+        } else {
+          console.warn(`⚠️ Service info available but no ports found, using fallback port 80`);
+        }
+      } catch (error) {
+        console.warn(`⚠️ Could not get service info, using fallback port 80:`, error);
+      }
+    } else {
+      console.warn(`⚠️ Docker service not available or no getServiceInfo method, using fallback port 80`);
+    }
+
+    // Create API client with determined baseUrl
     this.apiClient = new CowsayAPIClient({
-      baseUrl: 'http://localhost:80'
+      baseUrl: baseUrl
     });
+    console.log(`🌐 CowsayDockerModel API client configured with baseUrl: ${baseUrl}`);
   }
 
   async isAvailable(): Promise<boolean> {

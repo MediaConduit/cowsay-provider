@@ -29,6 +29,25 @@ export class CowsayDockerProvider {
   constructor(dockerService: any) {
     this.dockerService = dockerService;
     console.log(`🐄 CowsayDockerProvider initialized with Docker service:`, dockerService?.constructor?.name);
+    
+    // Configure API client with dynamic port if service is available
+    this.configureAPIClientWithDynamicPort();
+  }
+
+  private configureAPIClientWithDynamicPort(): void {
+    if (this.dockerService && this.dockerService.getServiceInfo) {
+      try {
+        const serviceInfo = this.dockerService.getServiceInfo();
+        if (serviceInfo.ports && serviceInfo.ports.length > 0) {
+          const port = serviceInfo.ports[0];
+          console.log(`🔗 CowsayDockerProvider configuring API client with dynamic port: ${port}`);
+          // Import and configure the API client here if needed
+          // The model will handle this in its constructor
+        }
+      } catch (error) {
+        console.warn(`⚠️ Could not get service info for dynamic port configuration:`, error);
+      }
+    }
   }
 
   async configure(config: any): Promise<void> {
