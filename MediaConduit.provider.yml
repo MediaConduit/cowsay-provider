@@ -3,7 +3,7 @@ name: Cowsay Docker Provider
 description: A Docker-based text-to-text provider that generates ASCII art using cowsay
 version: 1.0.0
 author: MediaConduit
-type: LOCAL
+type: local
 capabilities:
   - TEXT_TO_TEXT
 

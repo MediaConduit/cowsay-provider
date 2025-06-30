@@ -1,19 +1,17 @@
-import { MediaCapability, ProviderType, ProviderModel } from './types';
+import { MediaCapability, ProviderType, ProviderModel } from '@mediaconduit/mediaconduit/src/media/types/provider';
 import { CowsayDockerModel } from './CowsayDockerModel';
 
-// Import DockerMediaProvider from the main MediaConduit system
-// This will be resolved when the provider is loaded dynamically
 export class CowsayDockerProvider {
   readonly id: string = 'cowsay-docker-provider';
   readonly name: string = 'Cowsay Docker Provider';
   readonly type: ProviderType = ProviderType.LOCAL;
-  readonly capabilities: MediaCapability[] = [MediaCapability.TextToText];
+  readonly capabilities: MediaCapability[] = [MediaCapability.TEXT_TO_TEXT];
   readonly models: ProviderModel[] = [
     {
       id: 'cowsay-default',
       name: 'Cowsay Default',
       description: 'A simple text-to-text model that generates ASCII art of a cow saying your text.',
-      capabilities: [MediaCapability.TextToText],
+      capabilities: [MediaCapability.TEXT_TO_TEXT],
       parameters: {
         maxLength: 1000,
         timeout: 30000
@@ -72,11 +70,10 @@ export class CowsayDockerProvider {
   }
 
   async getHealth(): Promise<{
-    status: 'healthy' | 'degraded' | 'unhealthy';
+    status: 'healthy' | 'unhealthy';
     uptime: number;
     activeJobs: number;
     queuedJobs: number;
-    lastError?: string;
   }> {
     try {
       const isAvailable = await this.isAvailable();
@@ -84,16 +81,14 @@ export class CowsayDockerProvider {
         status: isAvailable ? 'healthy' : 'unhealthy',
         uptime: Date.now(),
         activeJobs: 0,
-        queuedJobs: 0,
-        lastError: isAvailable ? undefined : 'Service not available'
+        queuedJobs: 0
       };
     } catch (error) {
       return {
         status: 'unhealthy',
         uptime: 0,
         activeJobs: 0,
-        queuedJobs: 0,
-        lastError: error instanceof Error ? error.message : 'Unknown error'
+        queuedJobs: 0
       };
     }
   }
