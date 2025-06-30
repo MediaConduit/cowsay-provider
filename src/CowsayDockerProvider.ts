@@ -1,7 +1,9 @@
-import { MediaProvider, MediaCapability, ProviderType, ProviderModel, ProviderConfig } from './types';
+import { MediaCapability, ProviderType, ProviderModel } from './types';
 import { CowsayDockerModel } from './CowsayDockerModel';
 
-export class CowsayDockerProvider implements MediaProvider {
+// Import DockerMediaProvider from the main MediaConduit system
+// This will be resolved when the provider is loaded dynamically
+export class CowsayDockerProvider {
   readonly id: string = 'cowsay-docker-provider';
   readonly name: string = 'Cowsay Docker Provider';
   readonly type: ProviderType = ProviderType.LOCAL;
@@ -25,24 +27,27 @@ export class CowsayDockerProvider implements MediaProvider {
   ];
 
   private dockerService: any;
-  private config: ProviderConfig = {};
 
-  constructor(dockerService?: any) {
-    this.dockerService = dockerService || this.getDockerService();
+  constructor(dockerService: any) {
+    this.dockerService = dockerService;
+    console.log(`🐄 CowsayDockerProvider initialized with Docker service:`, dockerService?.constructor?.name);
   }
 
-  async configure(config: ProviderConfig): Promise<void> {
-    this.config = { ...this.config, ...config };
+  async configure(config: any): Promise<void> {
     console.log(`Configured ${this.name} with config:`, config);
   }
 
   async isAvailable(): Promise<boolean> {
     try {
-      // Check if Docker service is healthy
-      const dockerServiceHealthy = this.dockerService && this.dockerService.isServiceHealthy ? 
-        await this.dockerService.isServiceHealthy() : true;
+      if (!this.dockerService) {
+        console.log('❌ No Docker service available');
+        return false;
+      }
       
-      return dockerServiceHealthy;
+      // Check if Docker service is healthy
+      const status = await this.dockerService.getServiceStatus();
+      console.log(`🔍 Docker service status:`, status);
+      return status.running && status.health === 'healthy';
     } catch (error) {
       console.error('Error checking cowsay provider availability:', error);
       return false;
@@ -77,7 +82,7 @@ export class CowsayDockerProvider implements MediaProvider {
       const isAvailable = await this.isAvailable();
       return {
         status: isAvailable ? 'healthy' : 'unhealthy',
-        uptime: Date.now(), // Simplified - in real implementation would track actual uptime
+        uptime: Date.now(),
         activeJobs: 0,
         queuedJobs: 0,
         lastError: isAvailable ? undefined : 'Service not available'
@@ -93,27 +98,27 @@ export class CowsayDockerProvider implements MediaProvider {
     }
   }
 
-  // Legacy methods for backward compatibility
-  getAvailableModels(): string[] {
-    return this.models.map(m => m.id);
+  // DockerMediaProvider compatible methods
+  async startService(): Promise<boolean> {
+    if (this.dockerService && this.dockerService.startService) {
+      return await this.dockerService.startService();
+    }
+    console.log('⚠️ Docker service does not support startService method');
+    return false;
   }
 
-  async createModel(modelId: string): Promise<CowsayDockerModel> {
-    return this.getModel(modelId);
+  async stopService(): Promise<boolean> {
+    if (this.dockerService && this.dockerService.stopService) {
+      return await this.dockerService.stopService();
+    }
+    console.log('⚠️ Docker service does not support stopService method');
+    return false;
   }
 
-  protected getServiceUrl(): string | undefined {
-    return process.env.COWSAY_SERVICE_URL || 'https://github.com/MediaConduit/cowsay-service';
-  }
-
-  protected getDefaultBaseUrl(): string {
-    return 'http://localhost:80/';
-  }
-
-  protected getDockerService(): any {
-    // Mock docker service - in real implementation this would be injected
-    return {
-      isServiceHealthy: () => Promise.resolve(true)
-    };
+  async getServiceStatus(): Promise<any> {
+    if (this.dockerService && this.dockerService.getServiceStatus) {
+      return await this.dockerService.getServiceStatus();
+    }
+    return { running: false, health: 'unknown' };
   }
 }

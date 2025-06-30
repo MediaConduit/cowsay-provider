@@ -7,10 +7,10 @@ type: LOCAL
 capabilities:
   - TEXT_TO_TEXT
 
-# Docker service configuration
+# Docker service configuration - this tells the system to load the service from GitHub
 serviceUrl: https://github.com/MediaConduit/cowsay-service
 serviceConfig:
-  dockerCompose: docker/docker-compose.yml
+  dockerCompose: docker-compose.yml
   serviceName: cowsay
   healthEndpoint: /health
   defaultBaseUrl: http://localhost:80
