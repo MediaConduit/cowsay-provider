@@ -1,10 +1,12 @@
-import { TextToTextModel, TextToTextOptions, Text, TextRole, MediaCapability } from './types';
+import { Text, TextRole} from '@mediaconduit/mediaconduit';
+import { TextToTextModel, TextToTextOptions } from '@mediaconduit/mediaconduit/src/media/models/abstracts/TextToTextModel';
+import { MediaCapability } from '@mediaconduit/mediaconduit/src/media/types/provider';
 import { CowsayAPIClient, CowsayDockerConfig } from './CowsayAPIClient';
 
 export class CowsayDockerModel extends TextToTextModel {
   readonly id: string = 'cowsay-default';
   readonly name: string = 'Cowsay Default';
-  readonly capabilities: MediaCapability[] = [MediaCapability.TextToText];
+  readonly capabilities: MediaCapability[] = [MediaCapability.TEXT_TO_TEXT];
 
   private dockerService: any;
   private apiClient!: CowsayAPIClient; // Definitely assigned in configureAPIClient()

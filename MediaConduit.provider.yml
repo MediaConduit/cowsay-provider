@@ -9,11 +9,6 @@ capabilities:
 
 # Docker service configuration - this tells the system to load the service from GitHub
 serviceUrl: https://github.com/MediaConduit/cowsay-service
-serviceConfig:
-  dockerCompose: docker-compose.yml
-  serviceName: cowsay
-  healthEndpoint: /health
-  defaultBaseUrl: http://localhost:80
 
 # Provider models
 models:

@@ -1,6 +1,6 @@
 import { CowsayDockerProvider } from '../src/CowsayDockerProvider';
 import { CowsayAPIClient } from '../src/CowsayAPIClient';
-import { MediaCapability } from '../src/types';
+import { MediaCapability } from '@mediaconduit/mediaconduit/src/media/types/provider';
 
 describe('CowsayDockerProvider', () => {
   let provider: CowsayDockerProvider;
@@ -12,7 +12,7 @@ describe('CowsayDockerProvider', () => {
   test('should have correct metadata', () => {
     expect(provider.id).toBe('cowsay-docker-provider');
     expect(provider.name).toBe('Cowsay Docker Provider');
-    expect(provider.capabilities).toContain(MediaCapability.TextToText);
+    expect(provider.capabilities).toContain(MediaCapability.TEXT_TO_TEXT);
   });
 
   test('should return available models', () => {
