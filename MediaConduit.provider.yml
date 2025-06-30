@@ -1,0 +1,36 @@
+id: cowsay-docker-provider
+name: Cowsay Docker Provider
+description: A Docker-based text-to-text provider that generates ASCII art using cowsay
+version: 1.0.0
+author: MediaConduit
+type: LOCAL
+capabilities:
+  - TEXT_TO_TEXT
+
+# Docker service configuration
+serviceUrl: https://github.com/MediaConduit/cowsay-service
+serviceConfig:
+  dockerCompose: docker/docker-compose.yml
+  serviceName: cowsay
+  healthEndpoint: /health
+  defaultBaseUrl: http://localhost:80
+
+# Provider models
+models:
+  - id: cowsay-default
+    name: Cowsay Default
+    description: Basic cowsay ASCII art generation
+    capabilities:
+      - TEXT_TO_TEXT
+    inputTypes:
+      - text
+    outputTypes:
+      - text
+
+# Dependencies
+dependencies:
+  - axios: ^1.6.0
+
+# Entry point
+main: src/index.ts
+exportName: CowsayDockerProvider

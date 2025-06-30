@@ -1,0 +1,48 @@
+{
+  "name": "cowsay-provider",
+  "version": "1.0.0",
+  "description": "MediaConduit Cowsay Docker Provider",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mediaconduit",
+    "provider",
+    "cowsay",
+    "docker",
+    "text-to-text"
+  ],
+  "author": "MediaConduit",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.5.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MediaConduit/cowsay-provider.git"
+  },
+  "mediaconduit": {
+    "provider": {
+      "id": "cowsay-docker-provider",
+      "name": "Cowsay Docker Provider",
+      "type": "TextToText",
+      "capabilities": ["TextToText"],
+      "dockerService": {
+        "repository": "https://github.com/MediaConduit/cowsay-service",
+        "defaultPort": 80,
+        "healthEndpoint": "/health"
+      }
+    }
+  }
+}
